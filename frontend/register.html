@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodShare – Create Account</title>
+  <meta name="description" content="Join FoodShare and start donating or receiving food today.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --dark: #0a0f1e;
+      --dark2: #111827;
+      --card: #1a2235;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* ─── LEFT PANEL ─── */
+    .left-panel {
+      width: 42%;
+      background: var(--dark2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 50px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(34,197,94,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,197,94,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .form-container { position: relative; z-index: 1; max-width: 380px; width: 100%; margin: 0 auto; }
+
+    .form-header { margin-bottom: 32px; }
+    .home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 28px;
+      transition: color 0.3s;
+    }
+    .home-link:hover { color: var(--green); }
+
+    .form-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .form-title span {
+      background: linear-gradient(135deg, var(--green), #86efac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .form-sub { font-size: 14px; color: var(--muted); }
+
+    /* ─── ROLE TOGGLE ─── */
+    .role-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .role-option {
+      position: relative;
+    }
+    .role-option input { display: none; }
+    .role-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .role-label .role-icon { font-size: 24px; }
+    .role-label .role-name { font-size: 13px; font-weight: 700; }
+    .role-label .role-desc { font-size: 11px; color: var(--muted); font-weight: 400; text-align: center; }
+
+    .role-option input:checked + .role-label {
+      background: rgba(34,197,94,0.1);
+      border-color: rgba(34,197,94,0.4);
+      color: var(--green);
+    }
+    .role-option input:checked + .role-label .role-desc { color: rgba(34,197,94,0.7); }
+    .role-option input:checked + .role-label .tick {
+      display: flex;
+    }
+    .tick {
+      display: none;
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 18px; height: 18px;
+      background: var(--green);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #fff;
+    }
+
+    /* ─── FORM ─── */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      pointer-events: none;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px 12px 42px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .form-input:focus {
+      border-color: rgba(34,197,94,0.5);
+      background: rgba(34,197,94,0.04);
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.08);
+    }
+    .form-input::placeholder { color: rgba(148,163,184,0.4); }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 24px rgba(34,197,94,0.3);
+    }
+    .btn-submit:hover { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34,197,94,0.4); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .form-footer a { color: var(--green); text-decoration: none; font-weight: 600; }
+
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5;
+      padding: 11px 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .success-msg {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86efac;
+      padding: 11px 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel {
+      width: 58%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .right-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(0,0,0,0.65) 0%,
+        rgba(0,0,0,0.75) 100%
+      ), url("./hero-bg.png") center/cover no-repeat;
+    }
+
+    .particles { position: absolute; inset: 0; overflow: hidden; }
+    .particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: var(--green);
+      border-radius: 50%;
+      opacity: 0.35;
+      animation: float linear infinite;
+    }
+
+    .right-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 60px 50px;
+      max-width: 520px;
+    }
+
+    .right-content .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--green);
+      padding: 7px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+
+    .right-content h2 {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 18px;
+    }
+    .right-content h2 span {
+      background: linear-gradient(135deg, var(--green), #86efac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .right-content p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: left;
+    }
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+    .feature-item:hover { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
+    .feature-item .fi-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+    .feature-item .fi-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .feature-item .fi-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 0.35; }
+      90% { opacity: 0.15; }
+      100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+    }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .left-panel { animation: slideInLeft 0.7s ease; }
+    .right-panel { animation: slideInRight 0.7s ease; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @media (max-width: 768px) {
+      .right-panel { display: none; }
+      .left-panel { width: 100%; padding: 40px 24px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LEFT PANEL — FORM -->
+<div class="left-panel">
+  <div class="form-container">
+    <div class="form-header">
+      <a href="index.html" class="home-link">← Back to Home</a>
+      <h1 class="form-title">Join <span>FoodShare</span></h1>
+      <p class="form-sub">Create your free account and start making an impact.</p>
+    </div>
+
+    <!-- ROLE SELECTOR -->
+    <div class="role-toggle">
+      <div class="role-option">
+        <input type="radio" name="role" id="roleDonor" value="donor" checked>
+        <label class="role-label" for="roleDonor">
+          <div class="tick">✓</div>
+          <span class="role-icon">🍛</span>
+          <span class="role-name">I'm a Donor</span>
+          <span class="role-desc">I have surplus food to share</span>
+        </label>
+      </div>
+      <div class="role-option">
+        <input type="radio" name="role" id="roleReceiver" value="receiver">
+        <label class="role-label" for="roleReceiver">
+          <div class="tick">✓</div>
+          <span class="role-icon">🙏</span>
+          <span class="role-name">I'm a Receiver</span>
+          <span class="role-desc">I need food for my community</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
+
+    <form id="registerForm" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input id="name" class="form-input" type="text" placeholder="Your full name" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon">📧</span>
+          <input id="email" class="form-input" type="email" placeholder="your@email.com" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input id="password" class="form-input" type="password" placeholder="Min. 6 characters" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="registerBtn">
+        Create Account →
+      </button>
+    </form>
+
+    <div class="form-footer">
+      Already have an account? <a href="login.html">Sign in →</a>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL — INFO -->
+<div class="right-panel">
+  <div class="right-bg"></div>
+  <div class="particles" id="particles"></div>
+  <div class="right-content">
+    <div class="badge">🟢 Free to join — Always</div>
+    <h2>Fight Hunger,<br>Reduce <span>Waste</span></h2>
+    <p>Every registration brings us one step closer to a world with zero food waste and zero hunger.</p>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="fi-icon">📍</div>
+        <div>
+          <div class="fi-title">Nearby Matching</div>
+          <div class="fi-desc">GPS-based sorting shows the closest food donations first.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="fi-icon">🔔</div>
+        <div>
+          <div class="fi-title">Instant Notifications</div>
+          <div class="fi-desc">Get real-time alerts when someone requests your food or a donation is completed.</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="fi-icon">📊</div>
+        <div>
+          <div class="fi-title">Track Your Impact</div>
+          <div class="fi-desc">See all your donations and requests in one place, with live status updates.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Generate floating particles
+const particlesEl = document.getElementById('particles');
+for(let i = 0; i < 18; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.width = p.style.height = (Math.random() * 4 + 2) + 'px';
+  p.style.animationDuration = (Math.random() * 12 + 8) + 's';
+  p.style.animationDelay = (Math.random() * 8) + 's';
+  particlesEl.appendChild(p);
+}
+
+// Clear on load
+window.onload = () => {
+  document.getElementById('name').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('password').value = '';
+};
+
+function showError(msg) {
+  document.getElementById('successMsg').style.display = 'none';
+  const el = document.getElementById('errorMsg');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+
+function showSuccess(msg) {
+  document.getElementById('errorMsg').style.display = 'none';
+  const el = document.getElementById('successMsg');
+  el.textContent = '✅ ' + msg;
+  el.style.display = 'block';
+}
+
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('registerBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Creating account…';
+
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const role = document.querySelector('input[name="role"]:checked').value;
+
+  if(password.length < 6) {
+    btn.disabled = false;
+    btn.innerHTML = 'Create Account →';
+    showError("Password must be at least 6 characters.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password, role })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok) {
+      btn.disabled = false;
+      btn.innerHTML = 'Create Account →';
+      showError(data.error || "Registration failed.");
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("name", data.name || name);
+    showSuccess("Account created! Redirecting to dashboard…");
+    setTimeout(() => { window.location.href = "dashboard.html"; }, 1200);
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.innerHTML = 'Create Account →';
+    showError("Cannot reach server. Make sure the backend is running.");
+  }
+});
+</script>
+</body>
+</html>

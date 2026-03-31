@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodShare – Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --orange: #f97316;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --dark: #0a0f1e;
+      --dark2: #111827;
+      --card: #1a2235;
+      --card2: #1e283b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 3px; }
+
+    /* ═══ HEADER ═══ */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 36px;
+      background: rgba(10,15,30,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-brand {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--green), #86efac);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header-role-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-left: 10px;
+    }
+    .role-donor { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .role-receiver { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.3); }
+
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+
+    .notif-btn {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s;
+    }
+    .notif-btn:hover { border-color: rgba(34,197,94,0.3); background: var(--card2); }
+    .notif-badge {
+      position: absolute;
+      top: -5px; right: -5px;
+      background: var(--red);
+      color: #fff;
+      border-radius: 50%;
+      width: 18px; height: 18px;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-icon {
+      padding: 9px 18px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+      border: 1px solid var(--border);
+    }
+    .btn-logout { background: var(--card); color: var(--muted); }
+    .btn-logout:hover { background: var(--card2); color: var(--text); }
+    .btn-danger { background: rgba(239,68,68,0.1); color: var(--red); border-color: rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    /* ═══ LAYOUT ═══ */
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 73px);
+    }
+
+    /* ═══ SIDEBAR ═══ */
+    .sidebar {
+      background: var(--dark2);
+      border-right: 1px solid var(--border);
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      padding: 16px 12px 8px;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      transition: all 0.25s;
+      border: 1px solid transparent;
+    }
+    .sidebar-item:hover { background: var(--card); color: var(--text); }
+    .sidebar-item.active {
+      background: rgba(34,197,94,0.1);
+      color: var(--green);
+      border-color: rgba(34,197,94,0.2);
+    }
+    .sidebar-icon { font-size: 18px; }
+
+    /* ═══ MAIN CONTENT ═══ */
+    .main { padding: 32px 36px; overflow-y: auto; }
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.3s ease; }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+    /* ═══ CARDS ═══ */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ═══ FORM INPUTS ═══ */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+    .form-input {
+      padding: 11px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+      outline: none;
+      width: 100%;
+    }
+    .form-input:focus { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.05); }
+    .form-input::placeholder { color: var(--muted); }
+    input[type="file"].form-input { padding: 8px 14px; }
+
+    .btn-submit {
+      margin-top: 18px;
+      padding: 12px 28px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-submit:hover { background: var(--green-dark); transform: translateY(-2px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ═══ FOOD CARDS ═══ */
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .food-card {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: all 0.3s;
+      animation: fadeInUp 0.4s ease forwards;
+      opacity: 0;
+    }
+    .food-card:hover { transform: translateY(-4px); border-color: rgba(34,197,94,0.25); }
+    .food-card img { width: 100%; height: 155px; object-fit: cover; }
+    .food-card-body { padding: 14px; }
+    .food-card-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .food-card-meta { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+    .food-card-meta span { display: flex; align-items: center; gap: 5px; }
+    .btn-request {
+      width: 100%;
+      padding: 9px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: var(--green);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+    }
+    .btn-request:hover { background: var(--green); color: #fff; }
+
+    /* ═══ STATUS ITEMS ═══ */
+    .status-item {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    .status-item:hover { border-color: rgba(34,197,94,0.2); }
+    .status-info { flex: 1; }
+    .status-info .item-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .status-info .item-details { font-size: 12px; color: var(--muted); }
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-available { background: rgba(34,197,94,0.15); color: var(--green); }
+    .badge-requested { background: rgba(249,115,22,0.15); color: var(--orange); }
+    .badge-completed { background: rgba(59,130,246,0.15); color: var(--blue); }
+
+    .complete-btn {
+      margin-left: 12px;
+      padding: 7px 14px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: var(--green);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+    }
+    .complete-btn:hover { background: var(--green); color: #fff; }
+
+    /* ═══ SEARCH BAR ═══ */
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 11px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .search-input:focus { border-color: rgba(34,197,94,0.4); }
+    .search-input::placeholder { color: var(--muted); }
+
+    /* ═══ NOTIFICATIONS PANEL ═══ */
+    .notif-panel {
+      display: none;
+      position: fixed;
+      top: 73px; right: 20px;
+      width: 340px;
+      background: var(--card);
+      border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      z-index: 500;
+      max-height: 450px;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+    }
+    .notif-panel.open { display: flex; animation: fadeIn 0.3s ease; }
+    .notif-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .notif-header h3 { font-size: 15px; font-weight: 700; }
+    .notif-list { overflow-y: auto; flex: 1; }
+    .notif-item {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      line-height: 1.5;
+      transition: background 0.2s;
+    }
+    .notif-item.unread { background: rgba(34,197,94,0.05); border-left: 3px solid var(--green); }
+    .notif-item:hover { background: var(--card2); }
+    .notif-time { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .notif-empty { padding: 30px; text-align: center; color: var(--muted); font-size: 14px; }
+    .notif-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    /* ═══ EMPTY STATE ═══ */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state p { font-size: 15px; }
+
+    /* ═══ ANIMATIONS ═══ */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .food-card:nth-child(1) { animation-delay: 0.04s; }
+    .food-card:nth-child(2) { animation-delay: 0.08s; }
+    .food-card:nth-child(3) { animation-delay: 0.12s; }
+    .food-card:nth-child(4) { animation-delay: 0.16s; }
+    .food-card:nth-child(5) { animation-delay: 0.20s; }
+    .food-card:nth-child(6) { animation-delay: 0.24s; }
+    .food-card:nth-child(7) { animation-delay: 0.28s; }
+    .food-card:nth-child(8) { animation-delay: 0.32s; }
+
+    /* ═══ TOAST ═══ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--card);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--text);
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      max-width: 320px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(34,197,94,0.5); }
+    .toast.error { border-color: rgba(239,68,68,0.4); }
+
+    /* Filter Chips */
+    .filter-chip {
+      padding: 7px 18px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.25s;
+    }
+    .filter-chip:hover { background: var(--card); color: var(--text); }
+    .filter-chip.active-chip {
+      background: rgba(34,197,94,0.12);
+      border-color: rgba(34,197,94,0.35);
+      color: var(--green);
+    }
+
+    /* Category badge on food card */
+    .cat-badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 50px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .cat-veg { background: rgba(34,197,94,0.15); color: var(--green); }
+    .cat-non-veg { background: rgba(239,68,68,0.15); color: #f87171; }
+    .cat-both { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <div class="header-brand">🍱 FoodShare</div>
+    <span class="header-role-badge" id="roleBadge"></span>
+  </div>
+  <div class="header-actions">
+    <button class="notif-btn" id="notifBtn" onclick="toggleNotifPanel()">
+      🔔
+      <span class="notif-badge" id="notifCount" style="display:none">0</span>
+    </button>
+    <button class="btn-icon btn-logout" onclick="logout()">Logout</button>
+    <button class="btn-icon btn-danger" onclick="confirmDeleteAccount()">Delete Account</button>
+  </div>
+</header>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">
+    <h3>🔔 Notifications</h3>
+    <button class="notif-close-btn" onclick="closeNotifPanel()">✕</button>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty">No notifications yet</div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Filled by JS based on role -->
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- PAGE: Browse Food -->
+    <div class="page active" id="page-browse">
+      <!-- WELCOME BANNER -->
+      <div id="welcomeBanner" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(22,163,74,0.06)); border:1px solid rgba(34,197,94,0.2); border-radius:16px; padding:20px 24px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:20px; font-weight:800;" id="welcomeName">Welcome back! 👋</div>
+          <div style="font-size:13px; color:var(--muted); margin-top:4px;">Here's what's available near you today.</div>
+        </div>
+        <div style="font-size:36px;">🍛</div>
+      </div>
+      <div class="page-title">Browse Food 🍽</div>
+      <div class="page-sub">Available donations near you, sorted by distance.</div>
+      <div class="search-bar">
+        <input class="search-input" id="searchInput" placeholder="🔍  Search food by name or location…" oninput="filterFoods()">
+      </div>
+      <!-- CATEGORY FILTER -->
+      <div id="categoryFilter" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+        <button onclick="setFilter('all', this)" class="filter-chip active-chip">All 🍽</button>
+        <button onclick="setFilter('veg', this)" class="filter-chip">🟢 Veg</button>
+        <button onclick="setFilter('non-veg', this)" class="filter-chip">🔴 Non-Veg</button>
+        <button onclick="setFilter('both', this)" class="filter-chip">🟡 Mixed</button>
+      </div>
+      <div class="food-grid" id="foodList"></div>
+    </div>
+
+    <!-- PAGE: Add Food (Donor Only) -->
+    <div class="page" id="page-add">
+      <div class="page-title">Add Donation 📸</div>
+      <div class="page-sub">List your surplus food for people who need it.</div>
+      <div class="card">
+        <div class="card-title">🍛 Food Details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Food Type</label>
+            <input id="foodType" class="form-input" placeholder="e.g. Veg Thali, Biryani, Bread…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input id="quantity" class="form-input" placeholder="e.g. 10 plates, 5 kg…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pickup Location</label>
+            <input id="location" class="form-input" placeholder="e.g. Karol Bagh, Delhi">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pickup Time</label>
+            <input id="pickupTime" class="form-input" type="datetime-local">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="category" class="form-input">
+              <option value="veg">🟢 Vegetarian</option>
+              <option value="non-veg">🔴 Non-Vegetarian</option>
+              <option value="both">🟡 Mixed / Both</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label class="form-label">Food Photo</label>
+          <input type="file" id="image" class="form-input" accept="image/*" onchange="previewImage(event)">
+          <img id="imgPreview" src="" alt="Preview" style="display:none; width:100%; max-height:220px; object-fit:cover; border-radius:12px; margin-top:12px; border:1px solid var(--border);">
+        </div>
+        <button class="btn-submit" onclick="addFood()" id="addFoodBtn">
+          ➕ Add Donation
+        </button>
+      </div>
+    </div>
+
+    <!-- PAGE: My Donations (Donor Only) -->
+    <div class="page" id="page-mydonations">
+      <div class="page-title">My Donations 📦</div>
+      <div class="page-sub">Track food you've donated and manage incoming requests.</div>
+      <div id="myDonationsList"></div>
+    </div>
+
+    <!-- PAGE: My Requests (Receiver Only) -->
+    <div class="page" id="page-myrequests">
+      <div class="page-title">My Requests 📋</div>
+      <div class="page-sub">Track your food requests and their current status.</div>
+      <div id="myRequestsList"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+const userName = localStorage.getItem("name") || "User";
+
+if(!token){ window.location.href = "login.html"; }
+
+// Welcome banner
+const wn = document.getElementById('welcomeName');
+if(wn) wn.textContent = `Welcome back, ${userName}! 👋`;
+
+// Role badge
+const badge = document.getElementById('roleBadge');
+if(badge) {
+  badge.textContent = role ? role.charAt(0).toUpperCase() + role.slice(1) : '';
+  badge.className = 'header-role-badge ' + (role === 'donor' ? 'role-donor' : 'role-receiver');
+}
+
+// ═══ SIDEBAR SETUP ═══
+function setupSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const donorItems = `
+    <div class="sidebar-section-label">Donor Menu</div>
+    <div class="sidebar-item active" onclick="showPage('browse')">
+      <span class="sidebar-icon">🔍</span> Browse Food
+    </div>
+    <div class="sidebar-item" onclick="showPage('add')">
+      <span class="sidebar-icon">➕</span> Add Donation
+    </div>
+    <div class="sidebar-item" onclick="showPage('mydonations'); loadMyDonations();">
+      <span class="sidebar-icon">📦</span> My Donations
+    </div>
+  `;
+  const receiverItems = `
+    <div class="sidebar-section-label">Receiver Menu</div>
+    <div class="sidebar-item active" onclick="showPage('browse')">
+      <span class="sidebar-icon">🔍</span> Browse Food
+    </div>
+    <div class="sidebar-item" onclick="showPage('myrequests'); loadMyRequests();">
+      <span class="sidebar-icon">📋</span> My Requests
+    </div>
+  `;
+  sidebar.innerHTML = role === 'donor' ? donorItems : receiverItems;
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+// ═══ TOAST ═══
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => { t.classList.remove('show'); }, 3500);
+}
+
+// ═══ ALL FOODS (with search & category filter) ═══
+let allFoods = [];
+let filteredFoods = [];
+let activeFilter = 'all';
+
+async function loadFood(){
+  let url = "http://localhost:5000/api/food/all";
+  const fetchAndRender = async (fetchUrl) => {
+    const res = await fetch(fetchUrl);
+    const data = await res.json();
+    allFoods = data;
+    filteredFoods = data;
+    applyFilters();
+  };
+  navigator.geolocation?.getCurrentPosition(
+    (pos) => fetchAndRender(`${url}?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`),
+    () => fetchAndRender(url)
+  ) ?? fetchAndRender(url);
+}
+
+function setFilter(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active-chip'));
+  btn.classList.add('active-chip');
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  filteredFoods = allFoods.filter(f => {
+    const matchSearch = f.foodType.toLowerCase().includes(q) || f.location.toLowerCase().includes(q);
+    const matchCat = activeFilter === 'all' || f.category === activeFilter || !f.category;
+    return matchSearch && matchCat;
+  });
+  renderFoodGrid(filteredFoods);
+}
+
+function filterFoods() {
+  applyFilters();
+}
+
+// Image preview
+function previewImage(event) {
+  const file = event.target.files[0];
+  const preview = document.getElementById('imgPreview');
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function renderFoodGrid(data) {
+  const list = document.getElementById("foodList");
+  list.innerHTML = "";
+  if(data.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">🍽</div><p>No food donations matching your search.</p></div>`;
+    return;
+  }
+  data.forEach((f, i) => {
+    let img = f.image ? f.image : "";
+    let imgSrc = img.startsWith('http') ? img : (img ? `http://localhost:5000/uploads/${img}` : `https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400`);
+    let distText = f.distance && f.distance < 9999 ? `<span>📍 ${f.location} (${f.distance.toFixed(1)} km)</span>` : `<span>📍 ${f.location}</span>`;
+    let donorName = f.donor && f.donor.name ? `<span>👤 By: ${f.donor.name}</span>` : '';
+    let catClass = f.category === 'non-veg' ? 'cat-non-veg' : f.category === 'both' ? 'cat-both' : 'cat-veg';
+    let catLabel = f.category === 'non-veg' ? '🔴 Non-Veg' : f.category === 'both' ? '🟡 Mixed' : '🟢 Veg';
+    list.innerHTML += `
+      <div class="food-card" style="animation-delay:${i*0.07}s">
+        <img src="${imgSrc}" alt="${f.foodType}" onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'">
+        <div class="food-card-body">
+          <span class="cat-badge ${catClass}">${catLabel}</span>
+          <div class="food-card-title">${f.foodType}</div>
+          <div class="food-card-meta">
+            <span>🍽 ${f.quantity}</span>
+            ${distText}
+            <span>⏰ ${f.pickupTime}</span>
+            ${donorName}
+          </div>
+          ${role === "receiver" ? `<button class="btn-request" onclick="requestFood('${f._id}', this)">Request Food</button>` : ''}
+        </div>
+      </div>
+    `;
+  });
+}
+
+// ═══ ADD FOOD ═══
+async function addFood(){
+  const btn = document.getElementById('addFoodBtn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading…';
+  const submitFood = async (lat='', lng='') => {
+    const formData = new FormData();
+    formData.append("foodType", foodType.value);
+    formData.append("quantity", quantity.value);
+    formData.append("location", location.value);
+    formData.append("pickupTime", pickupTime.value);
+    formData.append("category", document.getElementById('category')?.value || 'veg');
+    if(lat) formData.append("lat", lat);
+    if(lng) formData.append("lng", lng);
+    if(image.files[0]) formData.append("image", image.files[0]);
+    const res = await fetch("http://localhost:5000/api/food/add", {
+      method: "POST",
+      headers: { "Authorization": token },
+      body: formData
+    });
+    btn.disabled = false;
+    btn.textContent = '➕ Add Donation';
+    if(res.ok) {
+      foodType.value = ""; quantity.value = ""; location.value = ""; pickupTime.value = ""; image.value = "";
+      const preview = document.getElementById('imgPreview');
+      if(preview) { preview.src=''; preview.style.display='none'; }
+      showToast("🎉 Food donation added successfully!");
+      loadFood();
+    } else {
+      showToast("Failed to add food. Try again.", 'error');
+    }
+  };
+  navigator.geolocation?.getCurrentPosition(
+    (pos) => submitFood(pos.coords.latitude, pos.coords.longitude),
+    () => submitFood()
+  ) ?? submitFood();
+}
+
+// ═══ REQUEST FOOD ═══
+async function requestFood(id, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Requesting…';
+  const res = await fetch("http://localhost:5000/api/food/request/" + id, {
+    method: "POST",
+    headers: { "Authorization": token }
+  });
+  if(res.ok) {
+    btn.textContent = '✅ Requested';
+    btn.style.background = 'rgba(34,197,94,0.2)';
+    showToast("✅ Food requested! Donor has been notified.");
+    loadMyRequests();
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Request Food';
+    showToast("Request failed. Try again.", 'error');
+  }
+}
+
+// ═══ MY REQUESTS ═══
+async function loadMyRequests(){
+  const res = await fetch("http://localhost:5000/api/food/my-requests", { headers: { "Authorization": token } });
+  const data = await res.json();
+  const el = document.getElementById("myRequestsList");
+  el.innerHTML = "";
+  if(data.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>You haven't requested any food yet. <a href="#" onclick="showPage('browse')" style="color:var(--green)">Browse available food →</a></p></div>`;
+    return;
+  }
+  data.forEach(f => {
+    let donorInfo = f.donor ? `Donor: ${f.donor.name} · ${f.donor.email}` : '';
+    el.innerHTML += `
+      <div class="status-item">
+        <div class="status-info">
+          <div class="item-name">${f.foodType}</div>
+          <div class="item-details">${f.location} · ${f.quantity} ${donorInfo ? '· ' + donorInfo : ''}</div>
+        </div>
+        <span class="status-badge badge-${f.status}">${f.status}</span>
+      </div>`;
+  });
+}
+
+// ═══ MY DONATIONS ═══
+async function loadMyDonations(){
+  const res = await fetch("http://localhost:5000/api/food/my-donations", { headers: { "Authorization": token } });
+  const data = await res.json();
+  const el = document.getElementById("myDonationsList");
+  el.innerHTML = "";
+  if(data.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div><p>You haven't donated any food yet. <a href="#" onclick="showPage('add'); event.stopPropagation();" style="color:var(--green)">Add your first donation →</a></p></div>`;
+    return;
+  }
+  data.forEach(f => {
+    let requesterInfo = (f.status === 'requested' && f.requestedBy) ? `Requested by: ${f.requestedBy.name} (${f.requestedBy.email})` : (f.status === 'available' ? 'Waiting for a receiver…' : 'Completed ✓');
+    el.innerHTML += `
+      <div class="status-item">
+        <div class="status-info">
+          <div class="item-name">${f.foodType}</div>
+          <div class="item-details">${f.quantity} · ${f.location} · ${requesterInfo}</div>
+        </div>
+        <span class="status-badge badge-${f.status}">${f.status}</span>
+        ${f.status === 'requested' ? `<button class="complete-btn" onclick="completeDonation('${f._id}', this)">Mark Done ✓</button>` : ''}
+      </div>`;
+  });
+}
+
+async function completeDonation(id, btn) {
+  btn.disabled = true;
+  await fetch("http://localhost:5000/api/food/complete/" + id, { method: "POST", headers: { "Authorization": token } });
+  showToast("🎉 Donation marked as completed!");
+  loadMyDonations();
+}
+
+// ═══ NOTIFICATIONS ═══
+async function loadNotifications() {
+  try {
+    const res = await fetch("http://localhost:5000/api/notifications", { headers: { "Authorization": token } });
+    const data = await res.json();
+    const unread = data.filter(n => !n.read).length;
+    const badge = document.getElementById('notifCount');
+    if(unread > 0) { badge.style.display = 'flex'; badge.textContent = unread; }
+    else { badge.style.display = 'none'; }
+
+    const list = document.getElementById('notifList');
+    list.innerHTML = '';
+    if(data.length === 0) { list.innerHTML = '<div class="notif-empty">No notifications yet 🔔</div>'; return; }
+    data.forEach(n => {
+      list.innerHTML += `
+        <div class="notif-item ${n.read ? '' : 'unread'}">
+          ${n.message}
+          <div class="notif-time">${new Date(n.createdAt).toLocaleString()}</div>
+        </div>`;
+    });
+  } catch(e) {}
+}
+
+async function markNotifRead() {
+  await fetch("http://localhost:5000/api/notifications/read", { method: "POST", headers: { "Authorization": token } });
+  loadNotifications();
+}
+
+function toggleNotifPanel() {
+  const p = document.getElementById('notifPanel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')) markNotifRead();
+}
+function closeNotifPanel() { document.getElementById('notifPanel').classList.remove('open'); }
+
+// Close panel on outside click
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('notifPanel');
+  const btn = document.getElementById('notifBtn');
+  if(panel.classList.contains('open') && !panel.contains(e.target) && !btn.contains(e.target)) {
+    closeNotifPanel();
+  }
+});
+
+// ═══ ACCOUNT ═══
+function confirmDeleteAccount() {
+  if(confirm("Are you sure you want to permanently delete your account?")) deleteAccount();
+}
+async function deleteAccount() {
+  await fetch("http://localhost:5000/api/auth/delete", { method: "DELETE", headers: { "Authorization": token } });
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+function logout() { localStorage.clear(); window.location.href = "login.html"; }
+
+// ═══ INIT ═══
+setupSidebar();
+loadFood();
+loadNotifications();
+setInterval(loadNotifications, 10000);
+</script>
+</body>
+</html>

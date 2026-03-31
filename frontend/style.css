@@ -1,0 +1,124 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+}
+
+.nav-buttons button {
+  margin-left: 10px;
+}
+
+button {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* BUTTONS */
+.home-btn { background: #00c6ff; color: white; }
+.logout-btn { background: red; color: white; }
+
+/* HERO */
+.hero {
+  text-align: center;
+  color: white;
+  padding: 80px 20px;
+}
+
+/* CONTAINER */
+.container {
+  width: 90%;
+  margin: auto;
+  padding: 20px;
+}
+
+/* FORM */
+.form-box {
+  background: rgba(255,255,255,0.2);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: none;
+}
+
+/* GRID */
+#foodList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+/* CARD */
+.food-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  animation: fadeIn 0.4s ease;
+}
+
+.food-card:hover {
+  transform: translateY(-5px);
+}
+
+/* SEARCH */
+.search-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* LOADER */
+.loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #00c6ff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: 20px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(10px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: black;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  display: none;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  #foodList {
+    grid-template-columns: 1fr;
+  }
+}
