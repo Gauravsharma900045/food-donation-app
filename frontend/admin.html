@@ -271,7 +271,7 @@ if(!token || role !== "admin") {
 let allUsers = [];
 
 async function loadStats() {
-  const res = await fetch("http://localhost:5000/api/admin/stats", { headers: { "Authorization": token } });
+  const res = await fetch("https://foodshare-backend-ao8p.onrender.com/api/admin/stats", { headers: { "Authorization": token } });
   const data = await res.json();
   document.getElementById("statDonors").innerText = data.totalDonors;
   document.getElementById("statReceivers").innerText = data.totalReceivers;
@@ -280,7 +280,7 @@ async function loadStats() {
 }
 
 async function loadUsers() {
-  const res = await fetch("http://localhost:5000/api/admin/users", { headers: { "Authorization": token } });
+  const res = await fetch("https://foodshare-backend-ao8p.onrender.com/api/admin/users", { headers: { "Authorization": token } });
   allUsers = await res.json();
   document.getElementById("userCount").innerText = `${allUsers.length} total registered users`;
   renderUsers(allUsers);
@@ -314,7 +314,7 @@ function filterUsers() {
 
 async function deleteUser(id) {
   if(!confirm("⚠️ This will permanently delete the user and all their food listings. Continue?")) return;
-  await fetch("http://localhost:5000/api/admin/user/" + id, {
+  await fetch("https://foodshare-backend-ao8p.onrender.com/api/admin/user/" + id, {
     method: "DELETE",
     headers: { "Authorization": token }
   });

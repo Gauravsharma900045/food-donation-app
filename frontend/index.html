@@ -831,7 +831,7 @@ document.getElementById('foodModal').addEventListener('click', function(e) {
 // LOAD FOOD FROM BACKEND
 async function loadFoods(){
   try {
-    const res = await fetch("http://localhost:5000/api/food/all");
+    const res = await fetch("https://foodshare-backend-ao8p.onrender.com/api/food/all");
     const data = await res.json();
     allFoods = data;
     const container = document.getElementById("foodContainer");
@@ -844,7 +844,7 @@ async function loadFoods(){
 
     data.slice(0,12).forEach((f, i) => {
       let img = f.image ? f.image : "";
-      let imgSrc = img.startsWith('http') ? img : (img ? `http://localhost:5000/uploads/${img}` : `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500`);
+      let imgSrc = img.startsWith('http') ? img : (img ? `https://foodshare-backend-ao8p.onrender.com/uploads/${img}` : `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500`);
       container.innerHTML += `
         <div class="food-card" style="animation-delay:${i * 0.07}s" onclick="showFoodDetails('${f._id}')">
           <div class="food-badge">Available</div>
@@ -870,7 +870,7 @@ function showFoodDetails(id) {
   const f = allFoods.find(x => x._id === id);
   if(f){
     let img = f.image ? f.image : "";
-    let imgSrc = img.startsWith('http') ? img : (img ? `http://localhost:5000/uploads/${img}` : `https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500`);
+    let imgSrc = img.startsWith('http') ? img : (img ? `https://foodshare-backend-ao8p.onrender.com/uploads/${img}` : `https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500`);
     document.getElementById("modalImg").src = imgSrc;
     document.getElementById("modalTitle").innerText = f.foodType;
     document.getElementById("modalQty").innerText = "Quantity: " + f.quantity;
