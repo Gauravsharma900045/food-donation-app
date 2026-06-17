@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0f1e;
+  color: #e2e8f0;
+  overflow-x: hidden;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0f1e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #22c55e;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease;
+}
+
+/* Utility Classes */
+.z-1000 {
+  z-index: 1000;
+}
+
+.backdrop-blur-2xl {
+  backdrop-filter: blur(20px);
+}
+
+/* Form Styles */
+input, textarea, select {
+  font-family: inherit;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Button Hover Effects */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 4px solid rgba(34, 197, 94, 0.1);
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

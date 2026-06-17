@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodShare – Project Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#22c55e;--gd:#16a34a;--o:#f97316;--dark:#0a0f1e;--d2:#111827;--card:#1a2235;--text:#e2e8f0;--muted:#94a3b8;--border:rgba(255,255,255,0.07)}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);height:100vh;overflow:hidden;user-select:none}
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--g),#86efac);transition:width 0.4s ease;z-index:999}
+/* NAV BAR */
+#topbar{position:fixed;top:0;left:0;right:0;height:44px;background:rgba(10,15,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:998}
+#topbar .brand{font-size:15px;font-weight:800;background:linear-gradient(135deg,var(--g),#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#topbar .controls{display:flex;align-items:center;gap:12px}
+#topbar button{background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;transition:all 0.2s}
+#topbar button:hover{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3)}
+#slideCounter{font-size:13px;color:var(--muted);font-weight:600;min-width:60px;text-align:center}
+/* SLIDES */
+#deck{position:fixed;inset:44px 0 56px;overflow:hidden}
+.slide{position:absolute;inset:0;padding:48px 60px;display:none;flex-direction:column;justify-content:center;align-items:flex-start;animation:slideIn 0.4s cubic-bezier(0.4,0,0.2,1)}
+.slide.active{display:flex}
+.slide.center{align-items:center;text-align:center}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+/* BOTTOM NAV */
+#bottombar{position:fixed;bottom:0;left:0;right:0;height:56px;background:rgba(10,15,30,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;z-index:998;flex-wrap:wrap}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all 0.3s;flex-shrink:0}
+.dot.active{background:var(--g);transform:scale(1.4)}
+.dot:hover{background:rgba(34,197,94,0.5)}
+/* TYPOGRAPHY */
+.tag{display:inline-block;background:rgba(34,197,94,0.12);color:var(--g);border:1px solid rgba(34,197,94,0.25);padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:18px}
+h1{font-size:clamp(36px,5vw,68px);font-weight:900;line-height:1.1;margin-bottom:16px}
+h2{font-size:clamp(26px,3.5vw,46px);font-weight:800;line-height:1.15;margin-bottom:14px}
+h3{font-size:18px;font-weight:700;margin-bottom:10px;color:var(--g)}
+.hl{background:linear-gradient(135deg,var(--g),#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:16px;color:var(--muted);line-height:1.7;max-width:680px}
+/* CARDS / GRIDS */
+.grid{display:grid;gap:16px;width:100%}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--g),transparent)}
+.card .icon{font-size:28px;margin-bottom:10px}
+.card h4{font-size:14px;font-weight:700;margin-bottom:6px;color:#fff}
+.card p,.card li{font-size:12.5px;color:var(--muted);line-height:1.6}
+.card ul{list-style:none;padding:0}
+.card ul li::before{content:'→ ';color:var(--g)}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:700}
+.badge-g{background:rgba(34,197,94,0.15);color:var(--g);border:1px solid rgba(34,197,94,0.3)}
+.badge-o{background:rgba(249,115,22,0.15);color:var(--o);border:1px solid rgba(249,115,22,0.3)}
+.badge-b{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3)}
+/* STAT CARDS */
+.stat{background:var(--card);border:1px solid rgba(34,197,94,0.15);border-radius:16px;padding:24px;text-align:center}
+.stat .num{font-size:36px;font-weight:900;color:var(--g);line-height:1}
+.stat .lbl{font-size:12px;color:var(--muted);margin-top:6px}
+.stat .ico{font-size:28px;margin-bottom:8px}
+/* CODE */
+pre{background:#0d1117;border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:18px;font-family:'Fira Code',monospace;font-size:12.5px;line-height:1.7;overflow-x:auto;width:100%}
+.kw{color:#ff79c6}.fn{color:#50fa7b}.st{color:#f1fa8c}.cm{color:#6272a4}.nu{color:#bd93f9}.ty{color:#8be9fd}
+/* ARCH */
+.arch-box{background:var(--card);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:14px 20px;text-align:center;font-size:13px;font-weight:600}
+.arch-arrow{text-align:center;color:var(--g);font-size:22px;margin:4px 0}
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:rgba(34,197,94,0.1);color:var(--g);padding:10px 14px;text-align:left;font-weight:700;border-bottom:1px solid rgba(34,197,94,0.2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--muted)}
+td:first-child{color:var(--text);font-weight:600}
+/* TIMELINE */
+.step{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+.stepn{background:var(--g);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;margin-top:2px}
+.stept{font-size:14px;font-weight:600;margin-bottom:3px}
+.stepd{font-size:12.5px;color:var(--muted)}
+/* QA */
+.qa{background:var(--card);border-left:3px solid var(--g);border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:10px}
+.qtext{font-size:13px;font-weight:700;color:var(--g);margin-bottom:6px}
+.atext{font-size:12.5px;color:var(--muted);line-height:1.6}
+/* TITLE SLIDE */
+.title-slide{background:linear-gradient(135deg,rgba(34,197,94,0.08) 0%,rgba(22,163,74,0.03) 100%)}
+.title-slide h1{font-size:clamp(48px,7vw,88px)}
+.info-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+/* CHALLENGES */
+.ch-item{display:flex;align-items:flex-start;gap:12px;background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border)}
+.ch-num{background:var(--o);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+/* SCROLL INNER */
+.scroll-inner{overflow-y:auto;width:100%;max-height:calc(100vh - 180px);padding-right:4px}
+.scroll-inner::-webkit-scrollbar{width:4px}
+.scroll-inner::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="topbar">
+  <div class="brand">🍱 FoodShare — Project Presentation</div>
+  <div class="controls">
+    <button onclick="prev()" title="Previous (←)">◀</button>
+    <span id="slideCounter">1 / 17</span>
+    <button onclick="next()" title="Next (→)">▶</button>
+    <button onclick="toggleFS()" title="Fullscreen" style="width:auto;padding:0 12px;font-size:12px">⛶ Fullscreen</button>
+  </div>
+</div>
+
+<div id="deck">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide center title-slide active" id="s1">
+  <div style="font-size:72px;margin-bottom:16px">🍱</div>
+  <div class="tag">B.Tech Final Year Project — Information Technology</div>
+  <h1><span class="hl">FoodShare</span></h1>
+  <p class="sub" style="text-align:center;margin:0 auto 28px">Share Food, Save Lives — A Full-Stack Food Donation Web Application</p>
+  <div class="info-row" style="justify-content:center">
+    <span class="badge badge-g">🏛 Guru Ghasidas Vishwavidyalaya</span>
+    <span class="badge badge-b">💻 B.Tech — Information Technology</span>
+    <span class="badge badge-o">📅 Academic Year 2025–2026</span>
+  </div>
+  <p style="margin-top:28px;font-size:13px;color:var(--muted)">Use ← → arrow keys or click the dots below to navigate</p>
+</div>
+
+<!-- SLIDE 2: INTRODUCTION -->
+<div class="slide" id="s2">
+  <div class="tag">Introduction</div>
+  <h2>What is <span class="hl">FoodShare?</span></h2>
+  <div class="grid g2" style="margin-top:10px">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="icon">🎯</div>
+        <h4>The Project</h4>
+        <p>FoodShare is a <strong style="color:#fff">full-stack web application</strong> that connects food donors — restaurants, families, events — with food receivers like NGOs, shelters, and individuals in need, all in real-time.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🌐</div>
+        <h4>Live Deployment</h4>
+        <ul>
+          <li>Frontend hosted on <strong style="color:#fff">Netlify</strong></li>
+          <li>Backend hosted on <strong style="color:#fff">Render.com</strong></li>
+          <li>Database on <strong style="color:#fff">MongoDB Atlas</strong> (cloud)</li>
+          <li>Accessible from any device, anywhere</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="height:100%;border-left:3px solid var(--o)">
+        <div class="icon">⚠️</div>
+        <h4 style="color:var(--o)">The Problem Statement</h4>
+        <ul style="margin-top:8px">
+          <li style="margin-bottom:8px"><strong style="color:#fff">68.7 million tonnes</strong> of food wasted in India annually (UNEP 2021)</li>
+          <li style="margin-bottom:8px">Millions go to bed <strong style="color:#fff">hungry every night</strong> across India</li>
+          <li style="margin-bottom:8px">No easy, <strong style="color:#fff">digital channel</strong> for surplus food to reach the underprivileged</li>
+          <li style="margin-bottom:8px">Existing platforms lack <strong style="color:#fff">real-time coordination</strong></li>
+          <li>No <strong style="color:#fff">photo-based listings</strong> or distance-based discovery</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: OBJECTIVES -->
+<div class="slide" id="s3">
+  <div class="tag">Objectives</div>
+  <h2>Project <span class="hl">Goals</span></h2>
+  <div class="grid g2" style="margin-top:12px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="step"><div class="stepn">1</div><div><div class="stept">Real-Time Platform</div><div class="stepd">Connect food donors with receivers across India using live database</div></div></div>
+      <div class="step"><div class="stepn">2</div><div><div class="stept">Food Listings with Images</div><div class="stepd">Donors post food with photos, quantity, location & pickup time</div></div></div>
+      <div class="step"><div class="stepn">3</div><div><div class="stept">Role-Based Access Control</div><div class="stepd">Separate roles: Donor, Receiver, Admin with different permissions</div></div></div>
+      <div class="step"><div class="stepn">4</div><div><div class="stept">Secure Authentication</div><div class="stepd">JWT tokens + bcrypt password hashing for all users</div></div></div>
+      <div class="step"><div class="stepn">5</div><div><div class="stept">Reduce Food Wastage</div><div class="stepd">Make surplus food visible to those in need</div></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="step"><div class="stepn">6</div><div><div class="stept">Distance-Based Sorting</div><div class="stepd">Haversine formula sorts food listings by nearest distance</div></div></div>
+      <div class="step"><div class="stepn">7</div><div><div class="stept">Real-Time Notifications</div><div class="stepd">Notify donors on food requests, receivers on pickup readiness</div></div></div>
+      <div class="step"><div class="stepn">8</div><div><div class="stept">Admin Dashboard</div><div class="stepd">Monitor system stats, manage users and food listings</div></div></div>
+      <div class="step"><div class="stepn">9</div><div><div class="stept">Mobile Responsive</div><div class="stepd">Fully responsive design with hamburger menu & bottom nav</div></div></div>
+      <div class="step"><div class="stepn">10</div><div><div class="stept">Production Deployment</div><div class="stepd">Live, accessible web app — not just a prototype</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: FEATURES -->
+<div class="slide" id="s4">
+  <div class="tag">Key Features</div>
+  <h2>What <span class="hl">FoodShare</span> Can Do</h2>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card"><div class="icon">🔐</div><h4>Secure Auth</h4><ul><li>JWT token (7-day expiry)</li><li>bcrypt password hashing</li><li>Auto-login after register</li><li>Token-based route guard</li></ul></div>
+    <div class="card"><div class="icon">🍛</div><h4>Food Management</h4><ul><li>Post with name, qty, photo</li><li>Category: Veg / Non-Veg / Both</li><li>Status: Available→Requested→Done</li><li>Image upload (5MB, validated)</li></ul></div>
+    <div class="card"><div class="icon">📍</div><h4>Geo-Discovery</h4><ul><li>Browser Geolocation API</li><li>Haversine distance sorting</li><li>Nearest food shown first</li><li>Graceful fallback if denied</li></ul></div>
+    <div class="card"><div class="icon">🔔</div><h4>Notifications</h4><ul><li>Alert donor when requested</li><li>Alert receiver on completion</li><li>Unread badge counter</li><li>Slide-in notification panel</li></ul></div>
+    <div class="card"><div class="icon">🎛️</div><h4>Admin Panel</h4><ul><li>Total donors & receivers</li><li>Total food & completions</li><li>User management table</li><li>Delete users (cascade)</li></ul></div>
+    <div class="card"><div class="icon">🔍</div><h4>Search & Filter</h4><ul><li>Live search by name/location</li><li>Category filter chips</li><li>Responsive food grid</li><li>Empty state handling</li></ul></div>
+  </div>
+</div>
+
+<!-- SLIDE 5: TECHNOLOGIES -->
+<div class="slide" id="s5">
+  <div class="tag">Technologies Used</div>
+  <h2>The <span class="hl">Tech Stack</span></h2>
+  <div class="grid g4" style="margin-top:14px">
+    <div>
+      <h3 style="font-size:13px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">🖥 Frontend</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="padding:12px"><h4>HTML5</h4><p>Semantic structure, accessibility, SEO meta tags</p></div>
+        <div class="card" style="padding:12px"><h4>CSS3 Vanilla</h4><p>CSS Grid, variables, glassmorphism, animations</p></div>
+        <div class="card" style="padding:12px"><h4>JavaScript ES6+</h4><p>Fetch API, DOM manipulation, async/await</p></div>
+        <div class="card" style="padding:12px"><h4>Geolocation API</h4><p>Browser GPS for distance sorting</p></div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">⚙️ Backend</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="padding:12px"><h4>Node.js</h4><p>JS runtime for server-side logic</p></div>
+        <div class="card" style="padding:12px"><h4>Express.js v5</h4><p>REST API framework, route handling</p></div>
+        <div class="card" style="padding:12px"><h4>Multer</h4><p>File upload middleware with validation</p></div>
+        <div class="card" style="padding:12px"><h4>CORS</h4><p>Cross-origin request enabling</p></div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">🔐 Auth & DB</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="padding:12px"><h4>MongoDB Atlas</h4><p>Cloud NoSQL database, 3 collections</p></div>
+        <div class="card" style="padding:12px"><h4>Mongoose ODM</h4><p>Schema definition, populate, queries</p></div>
+        <div class="card" style="padding:12px"><h4>JWT</h4><p>Stateless auth tokens, 7-day expiry</p></div>
+        <div class="card" style="padding:12px"><h4>bcryptjs</h4><p>Password hashing, 10 salt rounds</p></div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">☁️ Deployment</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="padding:12px;border-color:rgba(34,197,94,0.3)"><h4 style="color:var(--g)">Netlify</h4><p>Frontend static hosting with CDN</p></div>
+        <div class="card" style="padding:12px;border-color:rgba(249,115,22,0.3)"><h4 style="color:var(--o)">Render.com</h4><p>Backend Node.js server hosting</p></div>
+        <div class="card" style="padding:12px"><h4>Google Fonts</h4><p>Inter typeface for UI typography</p></div>
+        <div class="card" style="padding:12px"><h4>config.js</h4><p>Auto-detect dev vs production URL</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: ARCHITECTURE -->
+<div class="slide" id="s6">
+  <div class="tag">System Architecture</div>
+  <h2>How the System <span class="hl">Flows</span></h2>
+  <div class="grid g2" style="margin-top:14px;align-items:start">
+    <div>
+      <div class="arch-box" style="background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3)">
+        <div style="font-size:22px;margin-bottom:6px">🌐</div>
+        <strong>Frontend — Netlify</strong><br>
+        <span style="font-size:12px;color:var(--muted)">HTML + CSS + Vanilla JS<br>index.html · dashboard.html · login.html · register.html · admin.html</span>
+      </div>
+      <div class="arch-arrow">↕ HTTPS REST API (JSON)</div>
+      <div class="arch-box" style="background:rgba(249,115,22,0.08);border-color:rgba(249,115,22,0.3)">
+        <div style="font-size:22px;margin-bottom:6px">⚙️</div>
+        <strong>Backend — Render.com</strong><br>
+        <span style="font-size:12px;color:var(--muted)">Node.js + Express.js · Port 5000<br>/api/auth · /api/food · /api/notifications · /api/admin</span>
+      </div>
+      <div class="arch-arrow">↕ Mongoose ODM</div>
+      <div class="arch-box" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.3)">
+        <div style="font-size:22px;margin-bottom:6px">🗄️</div>
+        <strong>MongoDB Atlas — Cloud DB</strong><br>
+        <span style="font-size:12px;color:var(--muted)">Collections: Users · Foods · Notifications</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <h3 style="font-size:14px;margin-bottom:4px">📡 API Endpoint Groups</h3>
+      <div class="card" style="padding:12px">
+        <span class="badge badge-g" style="margin-bottom:8px;display:inline-flex">/api/auth</span>
+        <ul><li>POST /register — Create user + issue JWT</li><li>POST /login — Verify password + issue JWT</li><li>DELETE /delete — Remove account + cascade</li></ul>
+      </div>
+      <div class="card" style="padding:12px">
+        <span class="badge badge-o" style="margin-bottom:8px;display:inline-flex">/api/food</span>
+        <ul><li>POST /add — Upload food + image (Multer)</li><li>GET /all — Fetch available foods, sort by distance</li><li>POST /request/:id — Receiver requests food</li><li>POST /complete/:id — Donor marks complete</li></ul>
+      </div>
+      <div class="card" style="padding:12px">
+        <span class="badge badge-b" style="margin-bottom:8px;display:inline-flex">/api/admin</span>
+        <ul><li>GET /stats — System-wide metrics</li><li>GET /users — All non-admin users</li><li>DELETE /user/:id — Remove + cascade foods</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: UI/UX -->
+<div class="slide" id="s7">
+  <div class="tag">UI / UX Design</div>
+  <h2>Design <span class="hl">Philosophy</span></h2>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card">
+      <div class="icon">🎨</div>
+      <h4>Color & Theme</h4>
+      <ul>
+        <li>Dark mode (#0a0f1e) — reduces eye strain</li>
+        <li>Green (#22c55e) — symbolizes freshness & sustainability</li>
+        <li>Glassmorphism navbar: backdrop-filter blur(20px)</li>
+        <li>CSS custom properties for consistent theming</li>
+      </ul>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <div style="width:22px;height:22px;border-radius:50%;background:#0a0f1e;border:1px solid #333"></div>
+        <div style="width:22px;height:22px;border-radius:50%;background:#22c55e"></div>
+        <div style="width:22px;height:22px;border-radius:50%;background:#f97316"></div>
+        <div style="width:22px;height:22px;border-radius:50%;background:#1a2235;border:1px solid #333"></div>
+        <div style="width:22px;height:22px;border-radius:50%;background:#e2e8f0"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="icon">✨</div>
+      <h4>Animations & Motion</h4>
+      <ul>
+        <li>Hero text: fadeInUp on page load</li>
+        <li>Food cards: staggered delay (0.05s per card)</li>
+        <li>Buttons: translateY(-3px) on hover</li>
+        <li>Navbar shrinks on scroll (JS scroll event)</li>
+        <li>Stat counters animate 0 → target (rAF)</li>
+        <li>Modal: slideUp + backdrop blur</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">📱</div>
+      <h4>Responsive Layout</h4>
+      <ul>
+        <li>CSS Grid auto-fill minmax() — fluid columns</li>
+        <li>Dashboard: 280px sidebar + main content</li>
+        <li>Mobile: hamburger menu (☰) + slide-in sidebar</li>
+        <li>Bottom navigation bar on mobile</li>
+        <li>Breakpoint: @media (max-width: 768px)</li>
+        <li>clamp() for fluid font sizing</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">📐</div>
+      <h4>Homepage Layout</h4>
+      <ul>
+        <li>Full-screen hero with background image overlay</li>
+        <li>Live ticker — infinite CSS scroll animation</li>
+        <li>Impact stats: 12,400+ meals, 840+ donors</li>
+        <li>Food grid, testimonial cards, CTA section</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🎛️</div>
+      <h4>Dashboard UX</h4>
+      <ul>
+        <li>Role-based sidebar built dynamically by JS</li>
+        <li>No page reload — JS show/hide pages</li>
+        <li>Toast notifications (bottom-right pop-up)</li>
+        <li>Notification panel slides in on bell click</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">♿</div>
+      <h4>Accessibility & SEO</h4>
+      <ul>
+        <li>Semantic HTML5 elements (nav, main, aside)</li>
+        <li>Meta description on every page</li>
+        <li>Alt text on all images (onerror fallback)</li>
+        <li>Smooth scroll: scroll-behavior: smooth (CSS)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: CODE EXPLANATION -->
+<div class="slide" id="s8">
+  <div class="tag">Code Explanation</div>
+  <h2>Important <span class="hl">Code Blocks</span></h2>
+  <div class="grid g2" style="margin-top:10px">
+    <div>
+      <h3 style="font-size:13px;margin-bottom:8px">1️⃣ JWT Auth Middleware (auth.js)</h3>
+      <pre><span class="kw">function</span> <span class="fn">verifyToken</span>(req, res, next) {
+  <span class="kw">const</span> token = req.headers.<span class="st">authorization</span>;
+  <span class="kw">if</span> (!token) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="nu">401</span>).<span class="fn">send</span>(<span class="st">"Access Denied"</span>);
+  <span class="kw">try</span> {
+    <span class="kw">const</span> verified = jwt.<span class="fn">verify</span>(token, JWT_SECRET);
+    req.user = verified; <span class="cm">// { id, role }</span>
+    <span class="fn">next</span>();
+  } <span class="kw">catch</span> (err) { res.<span class="fn">status</span>(<span class="nu">400</span>).<span class="fn">send</span>(<span class="st">"Invalid Token"</span>); }
+}</pre>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">Reads JWT from Authorization header, verifies cryptographic signature, attaches decoded <code style="color:var(--g)">{ id, role }</code> to req.user for downstream routes.</p>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:8px">2️⃣ Distance Sort — Haversine Formula (food.js)</h3>
+      <pre><span class="kw">const</span> <span class="fn">calcDist</span> = (lat1,lon1,lat2,lon2) => {
+  <span class="kw">const</span> p = <span class="nu">0.017453292519943295</span>; <span class="cm">// π/180</span>
+  <span class="kw">const</span> a = <span class="nu">0.5</span> - Math.<span class="fn">cos</span>((lat2-lat1)*p)/<span class="nu">2</span> +
+    Math.<span class="fn">cos</span>(lat1*p) * Math.<span class="fn">cos</span>(lat2*p) *
+    (<span class="nu">1</span> - Math.<span class="fn">cos</span>((lon2-lon1)*p))/<span class="nu">2</span>;
+  <span class="kw">return</span> <span class="nu">12742</span> * Math.<span class="fn">asin</span>(Math.<span class="fn">sqrt</span>(a)); <span class="cm">// km</span>
+};
+foods.<span class="fn">map</span>(f => { f.distance = <span class="fn">calcDist</span>(...); <span class="kw">return</span> f; })
+     .<span class="fn">sort</span>((a,b) => a.distance - b.distance);</pre>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">Spherical geometry calculation — same algorithm used by Google Maps. Foods sorted ascending — nearest first.</p>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:8px">3️⃣ Food Schema (Food.js)</h3>
+      <pre><span class="kw">const</span> FoodSchema = <span class="kw">new</span> mongoose.<span class="fn">Schema</span>({
+  foodType: <span class="ty">String</span>, quantity: <span class="ty">String</span>,
+  category: { type: <span class="ty">String</span>, <span class="kw">enum</span>:[<span class="st">"veg","non-veg","both"</span>] },
+  status:   { type: <span class="ty">String</span>, <span class="kw">default</span>: <span class="st">"available"</span> },
+  image:    <span class="ty">String</span>,
+  donor:    { type: <span class="ty">ObjectId</span>, ref: <span class="st">"User"</span> },
+  requestedBy: { type: <span class="ty">ObjectId</span>, ref: <span class="st">"User"</span> },
+  lat: <span class="ty">Number</span>, lng: <span class="ty">Number</span>
+}, { <span class="st">timestamps</span>: <span class="kw">true</span> });</pre>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px"><code style="color:var(--g)">ref:"User"</code> enables Mongoose <code style="color:var(--g)">.populate()</code> — like a SQL JOIN. Status field acts as state machine: available→requested→completed.</p>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:8px">4️⃣ Environment Config (config.js)</h3>
+      <pre><span class="kw">const</span> API_BASE =
+  window.location.hostname === <span class="st">"localhost"</span>
+    ? <span class="st">"http://localhost:5000"</span>       <span class="cm">// Dev</span>
+    : <span class="st">"https://foodshare-backend-ao8p.onrender.com"</span>; <span class="cm">// Prod</span></pre>
+      <h3 style="font-size:13px;margin:10px 0 8px">5️⃣ Geolocation Fallback</h3>
+      <pre>navigator.geolocation<span class="st">?.</span><span class="fn">getCurrentPosition</span>(
+  pos => <span class="fn">fetch</span>(`${url}?lat=${pos.coords.latitude}`),
+  ()  => <span class="fn">fetch</span>(url) <span class="cm">// user denied — load without GPS</span>
+);</pre>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">Optional chaining <code style="color:var(--g)">?.</code> prevents crash if geolocation not supported. Two callbacks: success (with GPS) and failure (without GPS).</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: FUNCTIONALITY -->
+<div class="slide" id="s9">
+  <div class="tag">Functionality Breakdown</div>
+  <h2>Step-by-Step <span class="hl">Workflows</span></h2>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card" style="border-top:2px solid var(--g)">
+      <h4>🔐 Auth Flow</h4>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="width:22px;height:22px;font-size:10px">1</div><div class="stepd">User visits index.html → clicks Get Started</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="width:22px;height:22px;font-size:10px">2</div><div class="stepd">Fills register.html — name, email, password, role</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="width:22px;height:22px;font-size:10px">3</div><div class="stepd">POST → /api/auth/register</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="width:22px;height:22px;font-size:10px">4</div><div class="stepd">bcrypt hashes password (10 rounds)</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="width:22px;height:22px;font-size:10px">5</div><div class="stepd">JWT signed → sent to browser</div></div>
+      <div class="step"><div class="stepn" style="width:22px;height:22px;font-size:10px">6</div><div class="stepd">Stored in localStorage → redirect to dashboard</div></div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--o)">
+      <h4>🍛 Donation Flow (Donor)</h4>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:var(--o);width:22px;height:22px;font-size:10px">1</div><div class="stepd">Login → Donor sidebar appears</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:var(--o);width:22px;height:22px;font-size:10px">2</div><div class="stepd">Click Add Donation → fill form</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:var(--o);width:22px;height:22px;font-size:10px">3</div><div class="stepd">GPS captured via Geolocation API</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:var(--o);width:22px;height:22px;font-size:10px">4</div><div class="stepd">multipart/form-data POST → /api/food/add</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:var(--o);width:22px;height:22px;font-size:10px">5</div><div class="stepd">Multer saves image → MongoDB stores path</div></div>
+      <div class="step"><div class="stepn" style="background:var(--o);width:22px;height:22px;font-size:10px">6</div><div class="stepd">Listing goes live in Browse Food section</div></div>
+    </div>
+    <div class="card" style="border-top:2px solid #60a5fa">
+      <h4>📋 Request & Complete Flow</h4>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:#3b82f6;width:22px;height:22px;font-size:10px">1</div><div class="stepd">Receiver browses food sorted by distance</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:#3b82f6;width:22px;height:22px;font-size:10px">2</div><div class="stepd">Filter by Veg/Non-Veg, search by name</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:#3b82f6;width:22px;height:22px;font-size:10px">3</div><div class="stepd">Click Request Food → POST /api/food/request/:id</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:#3b82f6;width:22px;height:22px;font-size:10px">4</div><div class="stepd">Status → "requested" + donor notified 🔔</div></div>
+      <div class="step" style="margin-bottom:8px"><div class="stepn" style="background:#3b82f6;width:22px;height:22px;font-size:10px">5</div><div class="stepd">Donor clicks Complete → POST /api/food/complete/:id</div></div>
+      <div class="step"><div class="stepn" style="background:#3b82f6;width:22px;height:22px;font-size:10px">6</div><div class="stepd">Status → "completed" + receiver notified 🎉</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: PAGES OVERVIEW -->
+<div class="slide" id="s10">
+  <div class="tag">Pages Overview</div>
+  <h2>Website <span class="hl">Pages</span></h2>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card" style="border-top:2px solid var(--g)">
+      <div class="icon">🏠</div>
+      <h4>Homepage (index.html)</h4>
+      <ul>
+        <li>Full-screen hero + animated headline</li>
+        <li>Live scrolling ticker animation</li>
+        <li>Animated counters: 12,400+ meals</li>
+        <li>Featured food grid (from DB)</li>
+        <li>How It Works — 4 steps</li>
+        <li>Testimonials + CTA + Footer</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">📝</div>
+      <h4>Register (register.html)</h4>
+      <ul>
+        <li>Role selector: Donor / Receiver</li>
+        <li>Name, Email, Password, Confirm</li>
+        <li>Password match validation</li>
+        <li>POST → /api/auth/register</li>
+        <li>Auto JWT login on success</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🔑</div>
+      <h4>Login (login.html)</h4>
+      <ul>
+        <li>Email + Password form</li>
+        <li>POST → /api/auth/login</li>
+        <li>bcrypt compare on server</li>
+        <li>JWT issued → localStorage</li>
+        <li>Redirect to dashboard</li>
+      </ul>
+    </div>
+    <div class="card" style="grid-column:span 2;border-top:2px solid var(--o)">
+      <div class="icon">🎛️</div>
+      <h4>Dashboard (dashboard.html) — Role-Adaptive</h4>
+      <div class="grid g2" style="margin-top:8px">
+        <div>
+          <span class="badge badge-g" style="margin-bottom:8px;display:inline-flex">🤝 Donor View</span>
+          <ul><li>Browse Food (search + filter)</li><li>Add Donation (form + image upload + preview)</li><li>My Donations (status tracking + Complete btn)</li></ul>
+        </div>
+        <div>
+          <span class="badge badge-o" style="margin-bottom:8px;display:inline-flex">📋 Receiver View</span>
+          <ul><li>Browse Food (by distance, category filter)</li><li>My Requests (track status of requested items)</li><li>Notification bell with unread badge</li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-top:2px solid #60a5fa">
+      <div class="icon">🛡️</div>
+      <h4>Admin Panel (admin.html)</h4>
+      <ul>
+        <li>Stats: donors, receivers, foods, completions</li>
+        <li>User management table</li>
+        <li>Delete user (cascade deletes foods)</li>
+        <li>Protected by admin middleware</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: CHALLENGES -->
+<div class="slide" id="s11">
+  <div class="tag">Challenges Faced</div>
+  <h2>Real Engineering <span class="hl">Challenges</span></h2>
+  <div class="grid g2" style="margin-top:14px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="ch-item">
+        <div class="ch-num">1</div>
+        <div><div class="stept">CORS Errors — Cross-Origin Blocking</div><div class="stepd">Frontend on Netlify and Backend on Render are on different domains. Browser blocks cross-origin API calls by default, breaking all data fetching.</div></div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">2</div>
+        <div><div class="stept">Image Upload & Display in Production</div><div class="stepd">Multer saves images to /uploads/ on Render server. Frontend URLs are different — relative paths broke all food images in production deployment.</div></div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">3</div>
+        <div><div class="stept">JWT Token Persistence & Guards</div><div class="stepd">Token must survive page reloads. Expired/invalid tokens must redirect to login. Needed guards on both frontend (redirect) and backend (middleware).</div></div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">4</div>
+        <div><div class="stept">Geolocation: User Denial Handling</div><div class="stepd">Not all users grant GPS access. App must sort by distance if available, load food normally if user denies — two completely different code paths.</div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="ch-item">
+        <div class="ch-num">5</div>
+        <div><div class="stept">Responsive Dashboard Sidebar</div><div class="stepd">The 280px sidebar + main 2-column layout completely breaks on mobile. Needed a hamburger toggle, slide-in overlay, and bottom nav for phones.</div></div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">6</div>
+        <div><div class="stept">Real-Time Notifications (Without WebSockets)</div><div class="stepd">True real-time push requires WebSockets. Implemented on-demand fetching when bell is clicked — balances UX with server load.</div></div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">7</div>
+        <div><div class="stept">Dev vs Production URL Management</div><div class="stepd">API URL is http://localhost:5000 in development and https://render.com/... in production. Hardcoding either breaks the other environment.</div></div>
+      </div>
+      <div class="ch-item">
+        <div class="ch-num">8</div>
+        <div><div class="stept">Preventing Business Logic Violations</div><div class="stepd">Donors requesting their own food, receivers completing donations, duplicate requests — all needed explicit server-side guards, not just frontend checks.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: SOLUTIONS -->
+<div class="slide" id="s12">
+  <div class="tag">Solutions Implemented</div>
+  <h2>How We <span class="hl">Solved</span> Each Challenge</h2>
+  <div class="grid g2" style="margin-top:10px">
+    <div>
+      <h3 style="font-size:13px;margin-bottom:8px">✅ CORS Fix (server.js)</h3>
+      <pre><span class="kw">const</span> cors = <span class="fn">require</span>(<span class="st">"cors"</span>);
+app.<span class="fn">use</span>(<span class="fn">cors</span>()); <span class="cm">// Access-Control-Allow-Origin: *</span></pre>
+      <p style="font-size:12px;color:var(--muted);margin:6px 0 14px">Single line — adds CORS headers to every response before routes run.</p>
+
+      <h3 style="font-size:13px;margin-bottom:8px">✅ Image URL Fix (dashboard.html)</h3>
+      <pre><span class="kw">let</span> imgSrc = img.<span class="fn">startsWith</span>(<span class="st">'http'</span>)
+  ? img
+  : `https://foodshare-backend-ao8p.onrender.com
+     /uploads/${img}`;
+<span class="cm">// onerror fallback to Unsplash CDN image</span></pre>
+      <p style="font-size:12px;color:var(--muted);margin:6px 0 14px">Detects if path is already absolute. Auto-prefixes production domain otherwise.</p>
+
+      <h3 style="font-size:13px;margin-bottom:8px">✅ JWT Route Guard</h3>
+      <pre><span class="kw">const</span> token = localStorage.<span class="fn">getItem</span>(<span class="st">"token"</span>);
+<span class="kw">if</span>(!token) window.location.href = <span class="st">"login.html"</span>;</pre>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">Every protected page checks for token on load. Server middleware independently validates it on every API call.</p>
+    </div>
+    <div>
+      <h3 style="font-size:13px;margin-bottom:8px">✅ Geolocation Fallback</h3>
+      <pre>navigator.geolocation<span class="st">?.</span><span class="fn">getCurrentPosition</span>(
+  pos => <span class="fn">fetchAndRender</span>(
+    `${url}?lat=${pos.coords.latitude}
+     &lng=${pos.coords.longitude}`)
+  ,() => <span class="fn">fetchAndRender</span>(url) <span class="cm">// denied</span>
+);</pre>
+      <p style="font-size:12px;color:var(--muted);margin:6px 0 14px">Optional chaining <code style="color:var(--g)">?.</code> handles unsupported browsers. Two paths ensure the app always works.</p>
+
+      <h3 style="font-size:13px;margin-bottom:8px">✅ Business Logic Guards (food.js)</h3>
+      <pre><span class="kw">if</span>(food.donor.<span class="fn">toString</span>() === req.user.id)
+  <span class="kw">return</span> res.<span class="fn">status</span>(<span class="nu">400</span>).<span class="fn">json</span>({
+    error: <span class="st">"Cannot request your own donation"</span> });
+<span class="kw">if</span>(food.status !== <span class="st">"available"</span>)
+  <span class="kw">return</span> res.<span class="fn">status</span>(<span class="nu">400</span>).<span class="fn">json</span>({
+    error: <span class="st">"Already requested"</span> });</pre>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">Server-side validation — cannot be bypassed by client-side manipulation. ObjectId compared as strings.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: PERFORMANCE -->
+<div class="slide" id="s13">
+  <div class="tag">Performance & Optimization</div>
+  <h2>Built for <span class="hl">Speed & Security</span></h2>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card">
+      <div class="icon">⚡</div>
+      <h4>API Performance</h4>
+      <ul>
+        <li><strong style="color:var(--g)">.lean()</strong> on read queries — skips Mongoose hydration, 30-40% faster</li>
+        <li><strong style="color:var(--g)">.populate("donor","name")</strong> — fetches only name field, not full user doc</li>
+        <li>DB query filtered: only <strong style="color:var(--g)">status:"available"</strong> foods fetched</li>
+        <li>Distance sort done in Node, not DB (faster for small datasets)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🖼️</div>
+      <h4>Image Optimization</h4>
+      <ul>
+        <li>Max <strong style="color:var(--g)">5MB</strong> per upload enforced by Multer</li>
+        <li>Only <strong style="color:var(--g)">JPG, PNG, WEBP</strong> accepted (MIME type check)</li>
+        <li>Unique timestamped filenames — no collisions</li>
+        <li>CDN fallback (Unsplash) on image error</li>
+        <li><strong style="color:var(--g)">object-fit:cover</strong> — consistent display regardless of source dimensions</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🔐</div>
+      <h4>Security Hardening</h4>
+      <ul>
+        <li><strong style="color:var(--g)">bcrypt 10 rounds</strong> — 1024 iterations, brute-force resistant</li>
+        <li><strong style="color:var(--g)">JWT 7-day</strong> expiry — limits stolen token exposure</li>
+        <li><strong style="color:var(--g)">express.json({ limit:"10kb" })</strong> — blocks oversized payload attacks</li>
+        <li>Server-side role checks — client cannot forge permissions</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🎨</div>
+      <h4>CSS Performance</h4>
+      <ul>
+        <li><strong style="color:var(--g)">CSS Variables</strong> (:root) — one change updates entire theme</li>
+        <li>GPU-accelerated <strong style="color:var(--g)">transform</strong> for all animations (no layout reflow)</li>
+        <li>Staggered animation delays — prevents simultaneous reflows</li>
+        <li><strong style="color:var(--g)">backdrop-filter</strong> used sparingly — only navbar and modal</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">📱</div>
+      <h4>Responsive Performance</h4>
+      <ul>
+        <li>Single HTML file per page — minimal HTTP requests</li>
+        <li><strong style="color:var(--g)">CSS Grid auto-fill minmax()</strong> — no JS for responsive columns</li>
+        <li>CSS-native smooth scroll — zero JS overhead</li>
+        <li>Mobile sidebar shown via CSS class toggle — no layout recalculation</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">🔢</div>
+      <h4>Stat Counter Animation</h4>
+      <pre style="font-size:11px;padding:10px"><span class="kw">const</span> step = Math.<span class="fn">ceil</span>(target/<span class="nu">80</span>);
+<span class="kw">const</span> update = () => {
+  <span class="kw">if</span>(curr &lt; target) {
+    num.innerText = curr + step;
+    <span class="fn">requestAnimationFrame</span>(update);
+  }
+};</pre>
+      <p style="font-size:11.5px;color:var(--muted)">60fps smooth counter using rAF — no JS library needed</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: FUTURE -->
+<div class="slide" id="s14">
+  <div class="tag">Future Scope</div>
+  <h2>What's <span class="hl">Next</span> for FoodShare</h2>
+  <div class="grid g4" style="margin-top:14px">
+    <div class="card">
+      <div class="icon">🗺️</div>
+      <h4>Interactive Map</h4>
+      <p>Leaflet.js / Google Maps integration — show food pins on map, sorted by real-world proximity with route directions</p>
+    </div>
+    <div class="card">
+      <div class="icon">💬</div>
+      <h4>Real-Time Chat</h4>
+      <p>Socket.io WebSocket chat between donor and receiver — coordinate pickup without sharing phone numbers</p>
+    </div>
+    <div class="card">
+      <div class="icon">📲</div>
+      <h4>Mobile App / PWA</h4>
+      <p>Convert to Progressive Web App (PWA) or React Native — push notifications, offline support, installable on Android</p>
+    </div>
+    <div class="card">
+      <div class="icon">🤖</div>
+      <h4>AI Smart Matching</h4>
+      <p>ML recommendation engine matching receivers based on dietary preferences and past request patterns</p>
+    </div>
+    <div class="card">
+      <div class="icon">📊</div>
+      <h4>Analytics Dashboard</h4>
+      <p>Chart.js powered graphs — meal distribution trends, peak donation hours, city-wise impact reports</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔑</div>
+      <h4>Social Login</h4>
+      <p>Google OAuth / Facebook login — reduce registration friction, increase user adoption</p>
+    </div>
+    <div class="card">
+      <div class="icon">⏰</div>
+      <h4>Auto Expiry (Cron)</h4>
+      <p>Node-Cron auto-removes expired listings. Nodemailer sends reminder emails before pickup time expires</p>
+    </div>
+    <div class="card">
+      <div class="icon">🏆</div>
+      <h4>Donor Leaderboard</h4>
+      <p>Gamification — badges for milestone donations (10, 50, 100+ meals). Public leaderboard to encourage more donors</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: CONCLUSION -->
+<div class="slide center" id="s15">
+  <div class="tag">Conclusion</div>
+  <h2 style="text-align:center">FoodShare — <span class="hl">Built. Deployed. Impactful.</span></h2>
+  <div class="grid g3" style="margin-top:20px;text-align:left">
+    <div class="card">
+      <div class="icon">✅</div>
+      <h4>What We Built</h4>
+      <ul>
+        <li>Fully deployed full-stack web app</li>
+        <li>5 pages, 4 API groups, 3 DB models</li>
+        <li>JWT auth + bcrypt security</li>
+        <li>Real image upload with Multer</li>
+        <li>Geolocation distance sorting</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:rgba(34,197,94,0.3)">
+      <div class="icon">🌱</div>
+      <h4>Real-World Impact</h4>
+      <ul>
+        <li>Directly reduces food wastage</li>
+        <li>Connects restaurants, NGOs, shelters</li>
+        <li>Built for a hunger-free India</li>
+        <li>Works on any device, anywhere</li>
+        <li>Free and accessible to all</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="icon">📚</div>
+      <h4>What We Learned</h4>
+      <ul>
+        <li>Full-stack REST API development</li>
+        <li>JWT stateless auth design</li>
+        <li>Cloud deployment & config mgmt</li>
+        <li>Production debugging skills</li>
+        <li>Real-world UI/UX principles</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:28px;font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--g),#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent">"Connecting Surplus with Need" 🍱</div>
+  <p style="color:var(--muted);font-size:14px;margin-top:8px">Built with ❤️ for a Hunger-Free India — Guru Ghasidas Vishwavidyalaya, B.Tech IT 2025–26</p>
+</div>
+
+<!-- SLIDE 16: VIVA Q&A -->
+<div class="slide" id="s16">
+  <div class="tag">Viva Q&amp;A</div>
+  <h2>Expected <span class="hl">Viva Questions</span></h2>
+  <div class="scroll-inner">
+    <div class="grid g2" style="margin-top:10px">
+      <div>
+        <div class="qa"><div class="qtext">Q1. What is JWT and why use it instead of sessions?</div><div class="atext">JWT (JSON Web Token) is a cryptographically signed token encoding user identity. It's <strong style="color:#fff">stateless</strong> — server doesn't store session data. Stored in localStorage, sent in Authorization header. Expires in 7 days for security.</div></div>
+        <div class="qa"><div class="qtext">Q2. How does bcrypt work? What are salt rounds?</div><div class="atext">bcrypt with 10 salt rounds performs 2^10 = 1024 hashing iterations. Cannot be reversed. On login, bcrypt.compare() rehashes the input and compares — timing-safe comparison prevents timing attacks.</div></div>
+        <div class="qa"><div class="qtext">Q3. What is the Haversine Formula?</div><div class="atext">A spherical geometry formula calculating the great-circle distance between two GPS coordinates on Earth. Used in /api/food/all to compute distance from user's GPS to each food listing, then sort ascending — nearest first.</div></div>
+        <div class="qa"><div class="qtext">Q4. What is Multer and how does file upload work?</div><div class="atext">Express middleware for multipart/form-data. Validates file MIME type (JPG/PNG/WEBP only), enforces 5MB limit, saves to /uploads/ with unique timestamped filename. Path stored in MongoDB as string.</div></div>
+        <div class="qa"><div class="qtext">Q5. What does .populate() do in Mongoose?</div><div class="atext">Replaces an ObjectId reference with the actual document from the referenced collection — like SQL JOIN. populate("donor","name") fetches only the name field from User, not the full document.</div></div>
+      </div>
+      <div>
+        <div class="qa"><div class="qtext">Q6. How does role-based access work?</div><div class="atext">Role (donor/receiver/admin) stored in JWT payload and MongoDB. Frontend reads from localStorage to show/hide UI. Backend middleware checks req.user.role on every protected route — server-side enforcement cannot be bypassed.</div></div>
+        <div class="qa"><div class="qtext">Q7. What is CORS and why was it needed?</div><div class="atext">Cross-Origin Resource Sharing — browser security policy blocking requests from different domains. Frontend (Netlify) and backend (Render) are on different domains. cors npm package adds Access-Control-Allow-Origin: * headers.</div></div>
+        <div class="qa"><div class="qtext">Q8. What happens when a user deletes their account?</div><div class="atext">Cascade deletion: (1) User document deleted, (2) All Food documents where donor matches user ID deleted, (3) All Notifications for that user deleted. Ensures no orphaned documents remain in the database.</div></div>
+        <div class="qa"><div class="qtext">Q9. Embedded vs Referenced documents in MongoDB?</div><div class="atext">We used referencing (ObjectId + populate) because User data is large and shared across many food documents. Embedding would duplicate user data in every food document — wasteful and hard to update consistently.</div></div>
+        <div class="qa"><div class="qtext">Q10. How does the geolocation fallback work?</div><div class="atext">navigator.geolocation?.getCurrentPosition(successCb, failCb). Optional chaining ?. handles unsupported browsers. failCb loads food without GPS params — app works normally. successCb sends lat/lng as query params for distance sorting.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: SUMMARY TABLE -->
+<div class="slide" id="s17">
+  <div class="tag">Project Summary</div>
+  <h2>FoodShare — <span class="hl">At a Glance</span></h2>
+  <div class="grid g2" style="margin-top:14px;align-items:start">
+    <table>
+      <tr><th>Attribute</th><th>Details</th></tr>
+      <tr><td>Project Name</td><td>FoodShare – Share Food, Save Lives</td></tr>
+      <tr><td>Type</td><td>Full-Stack Web Application</td></tr>
+      <tr><td>Frontend</td><td>HTML5, CSS3, Vanilla JavaScript</td></tr>
+      <tr><td>Backend</td><td>Node.js + Express.js v5</td></tr>
+      <tr><td>Database</td><td>MongoDB Atlas (Cloud NoSQL)</td></tr>
+      <tr><td>Authentication</td><td>JWT + bcryptjs (10 rounds)</td></tr>
+      <tr><td>File Upload</td><td>Multer (5MB, JPG/PNG/WEBP)</td></tr>
+      <tr><td>Deployment</td><td>Netlify (Frontend) + Render.com (Backend)</td></tr>
+      <tr><td>Total Pages</td><td>5 (Home, Login, Register, Dashboard, Admin)</td></tr>
+      <tr><td>API Route Groups</td><td>4 (Auth, Food, Notifications, Admin)</td></tr>
+      <tr><td>Database Models</td><td>3 (User, Food, Notification)</td></tr>
+      <tr><td>Special Features</td><td>Geolocation sorting, Notifications, Image upload</td></tr>
+      <tr><td>Mobile Support</td><td>✅ Fully Responsive</td></tr>
+    </table>
+    <div>
+      <div class="grid g2" style="margin-bottom:14px">
+        <div class="stat"><div class="ico">🍽</div><div class="num">12,400+</div><div class="lbl">Meals Donated</div></div>
+        <div class="stat"><div class="ico">🤝</div><div class="num">840+</div><div class="lbl">Active Donors</div></div>
+        <div class="stat"><div class="ico">🏘</div><div class="num">320+</div><div class="lbl">Communities</div></div>
+        <div class="stat"><div class="ico">⚡</div><div class="num">98%</div><div class="lbl">Pickup Success</div></div>
+      </div>
+      <div class="card" style="border-color:rgba(34,197,94,0.3);text-align:center;padding:24px">
+        <div style="font-size:48px;margin-bottom:12px">🍱</div>
+        <div style="font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--g),#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent">FoodShare</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:6px">Connecting Surplus with Need</div>
+        <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <span class="badge badge-g">🏛 Guru Ghasidas Vishwavidyalaya</span>
+          <span class="badge badge-b">💻 B.Tech IT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<div id="bottombar" id="dots"></div>
+
+<script>
+const TOTAL = 17;
+let cur = 1;
+
+function render() {
+  document.querySelectorAll('.slide').forEach((s,i) => {
+    s.classList.toggle('active', i+1 === cur);
+  });
+  document.querySelectorAll('.dot').forEach((d,i) => {
+    d.classList.toggle('active', i+1 === cur);
+  });
+  document.getElementById('slideCounter').textContent = cur + ' / ' + TOTAL;
+  document.getElementById('progress').style.width = ((cur/TOTAL)*100) + '%';
+}
+
+function next() { if(cur < TOTAL) { cur++; render(); } }
+function prev() { if(cur > 1) { cur--; render(); } }
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+  if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+});
+
+function toggleFS() {
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+// Build dots
+const bar = document.getElementById('bottombar');
+for(let i=1;i<=TOTAL;i++){
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===1?' active':'');
+  d.title = 'Slide ' + i;
+  d.onclick = () => { cur=i; render(); };
+  bar.appendChild(d);
+}
+
+// Touch swipe
+let tx = 0;
+document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  const dx = tx - e.changedTouches[0].clientX;
+  if(Math.abs(dx) > 50) dx > 0 ? next() : prev();
+});
+
+render();
+</script>
+</body>
+</html>
